@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wikibase | Open Source Wiki</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/13.0.1/markdown-it.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    </style>
+</head>
+<body>
+
+    <nav class="sticky top-0 border-b border-gray-200 glass z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('portal')">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                    <path d="M8 7h6"></path>
+                    <path d="M8 11h8"></path>
+                </svg>
+                <span class="text-xl font-bold tracking-tight text-gray-800">Wiki<span class="text-blue-600">base</span></span>
+            </div>
+            
+            <div class="flex gap-4">
+                <button onclick="navigate('portal')" class="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium">Portal</button>
+                <button onclick="navigate('create')" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition">Create Article</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app" class="max-w-5xl mx-auto p-6 min-h-[calc(100vh-64px)]">
+        </main>
+
+    <script>
+        const md = window.markdownit();
+        
+        // Initial Sample Data (Storage အစား)
+        let articles = JSON.parse(localStorage.getItem('wikibase_data')) || {
+            "Home": { content: "# Welcome to Wikibase\n\nThis is your lightweight open-source wiki.", history: ["Initial Create"] }
+        };
+
+        function save() {
+            localStorage.setItem('wikibase_data', JSON.stringify(articles));
+        }
+
+        const views = {
+            portal: () => {
+                let list = Object.keys(articles).map(title => `
+                    <div class="p-6 bg-white border border-gray-200 rounded-xl hover:shadow-md transition cursor-pointer" onclick="viewArticle('${title}')">
+                        <h3 class="text-lg font-bold text-blue-600">${title}</h3>
+                        <p class="text-gray-500 text-sm mt-1">Last edited recently</p>
+                    </div>
+                `).join('');
+                
+                return `
+                    <header class="mb-10 text-center">
+                        <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Explore Knowledge</h1>
+                        <p class="text-gray-600">မြန်ဆန်ပြီး ပေါ့ပါးသော Open Source နည်းပညာဝီကီ</p>
+                    </header>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">${list}</div>
+                `;
+            },
+            view: (title) => {
+                const article = articles[title];
+                return `
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h1 class="text-3xl font-bold">${title}</h1>
+                        <div class="flex gap-2">
+                            <button onclick="editArticle('${title}')" class="p-2 hover:bg-gray-100 rounded border">Edit</button>
+                            <button onclick="viewHistory('${title}')" class="p-2 hover:bg-gray-100 rounded border">History</button>
+                        </div>
+                    </div>
+                    <article class="prose prose-blue max-w-none">
+                        ${md.render(article.content)}
+                    </article>
+                `;
+            },
+            edit: (title) => {
+                const article = articles[title] || { content: "" };
+                return `
+                    <h1 class="text-2xl font-bold mb-4">Editing: ${title}</h1>
+                    <textarea id="editor" class="w-full h-96 p-4 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-mono text-sm">${article.content}</textarea>
+                    <div class="mt-4 flex gap-2">
+                        <button onclick="saveArticle('${title}')" class="bg-blue-600 text-white px-6 py-2 rounded-lg">Save Changes</button>
+                        <button onclick="navigate('portal')" class="text-gray-500 px-6 py-2">Cancel</button>
+                    </div>
+                `;
+            },
+            create: () => `
+                <h1 class="text-2xl font-bold mb-4">Create New Article</h1>
+                <input id="new-title" type="text" placeholder="Article Title" class="w-full p-3 border rounded-lg mb-4 outline-none focus:border-blue-600">
+                <textarea id="new-content" placeholder="Content (Markdown supported)" class="w-full h-80 p-4 border rounded-lg outline-none focus:border-blue-600"></textarea>
+                <button onclick="createNew()" class="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg">Publish Article</button>
+            `,
+            history: (title) => {
+                const list = articles[title].history.map(h => `<li class="p-3 border-b text-gray-700">${h}</li>`).reverse().join('');
+                return `
+                    <h1 class="text-2xl font-bold mb-4">History: ${title}</h1>
+                    <ul class="bg-white rounded-lg border">${list}</ul>
+                    <button onclick="viewArticle('${title}')" class="mt-4 text-blue-600">← Back to Article</button>
+                `;
+            }
+        };
+
+        // Router/Navigation Logic
+        function navigate(view, param = null) {
+            const app = document.getElementById('app');
+            app.innerHTML = views[view](param);
+            window.scrollTo(0,0);
+        }
+
+        function viewArticle(title) { navigate('view', title); }
+        function editArticle(title) { navigate('edit', title); }
+        function viewHistory(title) { navigate('history', title); }
+
+        function saveArticle(title) {
+            const newContent = document.getElementById('editor').value;
+            articles[title].content = newContent;
+            articles[title].history.push(`Edited on ${new Date().toLocaleString()}`);
+            save();
+            viewArticle(title);
+        }
+
+        function createNew() {
+            const title = document.getElementById('new-title').value;
+            const content = document.getElementById('new-content').value;
+            if(!title) return alert("Title required!");
+            articles[title] = { content, history: [`Created on ${new Date().toLocaleString()}`] };
+            save();
+            viewArticle(title);
+        }
+
+        // Start at Portal
+        navigate('portal');
+    </script>
+</body>
+</html>
