@@ -33,12 +33,62 @@
     </nav>
 
     <main id="app" class="max-w-5xl mx-auto p-6 min-h-[calc(100vh-64px)]">
-        </main>
+    </main>
+
+    <footer class="mt-20 border-t border-gray-200 py-16 bg-white shadow-inner">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                
+                <div class="space-y-4">
+                    <div class="flex items-center gap-2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path></svg>
+                        <h3 class="text-xl font-black text-gray-800 tracking-tighter">Wiki<span class="text-blue-600">base</span></h3>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed max-w-md">
+                        မြန်ဆန်၊ ပေါ့ပါးပြီး စနစ်ကျသော Open Source နည်းပညာဝီကီ။ <br>
+                        <span class="font-medium">© 2024 Wikibase Project. All Rights Reserved.</span>
+                    </p>
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <img src="https://img.shields.io/badge/EUCD-Compliant-blue?style=flat-square" alt="EUCD">
+                        <img src="https://img.shields.io/badge/GDPR-Compliant-brightgreen?style=flat-square" alt="GDPR">
+                        <img src="https://img.shields.io/badge/W3C-Validated-orange?style=flat-square" alt="W3C">
+                    </div>
+                    <p class="text-[10px] text-gray-400 uppercase tracking-widest italic pt-2">Protected by WIPO PROOF & International Copyright Laws</p>
+                </div>
+
+                <div class="flex flex-wrap justify-center md:justify-end gap-6 items-center">
+                    
+                    <a href="//www.dmca.com/Protection/Status.aspx?ID=7c252743-d30e-4d9f-baa7-31f6280a32b9" title="DMCA.com Protection Status" class="dmca-badge hover:scale-105 transition-transform"> 
+                        <img src="https://images.dmca.com/Badges/dmca-badge-w200-2x1-03.png?ID=7c252743-d30e-4d9f-baa7-31f6280a32b9" alt="DMCA Status" width="120" />
+                    </a>
+
+                    <a class="copyrighted-badge hover:scale-105 transition-transform" title="Copyrighted.com Registered &amp; Protected" target="_blank" href="https://app.copyrighted.com/work/0LzYuPlVbsuOBsKC/">
+                        <img alt="Copyrighted.com Registered" border="0" width="110" height="65" srcset="https://static.copyrighted.com/badges/125x75/03_2x.png 2x" src="https://static.copyrighted.com/badges/125x75/03.png">
+                    </a>
+
+                    <a href="https://opensource.org/licenses/MIT" target="_blank" class="hover:scale-105 transition-transform">
+                        <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT" class="h-8">
+                    </a>
+
+                    <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by-nc-sa.svg" width="88" alt="CC BY-NC-SA" class="opacity-80 hover:opacity-100 transition">
+                </div>
+            </div>
+
+            <div class="mt-12 pt-8 border-t border-gray-100 flex flex-wrap justify-center gap-6 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <img src="https://img.shields.io/badge/Security-Protected-green?style=social&logo=google-cloud" alt="Security">
+                <img src="https://img.shields.io/badge/Privacy-First-blueviolet?style=social&logo=ghost" alt="Privacy">
+                <img src="https://img.shields.io/badge/Open%20Source-Approved-green?style=social&logo=opensourceinitiative" alt="OpenSource">
+            </div>
+        </div>
+        
+        <script src="https://static.copyrighted.com/badges/helper.js"></script>
+        <script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script>
+    </footer>
 
     <script>
         const md = window.markdownit();
         
-        // Initial Sample Data (Storage အစား)
+        // Initial Sample Data
         let articles = JSON.parse(localStorage.getItem('wikibase_data')) || {
             "Home": { content: "# Welcome to Wikibase\n\nThis is your lightweight open-source wiki.", history: ["Initial Create"] }
         };
@@ -106,7 +156,6 @@
             }
         };
 
-        // Router/Navigation Logic
         function navigate(view, param = null) {
             const app = document.getElementById('app');
             app.innerHTML = views[view](param);
@@ -134,7 +183,6 @@
             viewArticle(title);
         }
 
-        // Start at Portal
         navigate('portal');
     </script>
 </body>
